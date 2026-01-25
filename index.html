@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-Brick Plant Document COA Navigator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 16px;
+            line-height: 1.5;
+            background: #f8f9fa;
+        }
+        h1 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+        }
+        .tree {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .tree li {
+            margin: 6px 0;
+            position: relative;
+        }
+        .tree .toggle {
+            cursor: pointer;
+            display: inline-block;
+            width: 1.4em;
+            text-align: center;
+            font-weight: bold;
+            color: #555;
+            background: #e9ecef;
+            border-radius: 3px;
+            margin-right: 6px;
+            user-select: none;
+        }
+        .tree .no-children {
+            display: inline-block;
+            width: 1.4em;
+        }
+        .tree a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        .tree a:hover {
+            text-decoration: underline;
+            color: #004080;
+        }
+        .tree .page {
+            color: #6c757d;
+            font-size: 0.85em;
+            margin-left: 0.5em;
+        }
+        .tree ul {
+            display: none;
+            padding-left: 1.4em;
+            margin: 4px 0 0 0;
+        }
+        .tree .expanded > ul {
+            display: block;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            body { font-size: 15px; margin: 12px; }
+            h1 { font-size: 1.4rem; }
+            .tree .toggle { width: 1.3em; }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Carbonated Fly Ash Brick (C-Brick) Plant – Bookmarks Navigator</h1>
+
+<ul class="tree" id="treeRoot"></ul>
+
+<script>
+// Hierarchical data from your Excel (level + title + page)
+// You can regenerate this array if needed by exporting Excel → CSV → JSON
+const items = [
+  {level:0, title:"CONTRACT AGREEMENT Carbonated Fly Ash Brick (C-Brick) Plant of 2 Lakh per Day Capacity ", page:1},
+  {level:0, title:"INDEX ", page:2},
+  {level:0, title:"First Contract ", page:3},
+  {level:1, title:"Article 1 Contract Documents ", page:4},
+  {level:1, title:"Article 2 Contract Price and Terms of Payment ", page:4},
+  {level:1, title:"Article 3. Effective Date for Determining Time for Completion ", page:5},
+  {level:1, title:"Article 4 ", page:6},
+  {level:1, title:"Article 5. Appendices ", page:6},
+  {level:2, title:"APPENDIX-1 TERMS AND PROCEDURES OF PAYMENT ", page:8},
+  {level:2, title:"APPENDIX-2 PVC ", page:38},
+  {level:2, title:"APPENDIX-3 INSURANCE REQUIREMENTS ", page:39},
+  {level:2, title:"APPENDIX - 4 TIME SCHEDULE ", page:42},
+  {level:3, title:"ANNEXURE-I MASTER NETWORK ", page:44},
+  {level:3, title:"ANNEXURE-II LIST OF TOOLS & PLANT TO BE DEPLOYED BY THE CONTRACTOR ", page:49},
+  {level:3, title:"LIST OF SAFETY PLANT AND EQUIPMENT AND PPE TO BE DEPLOYED BY THE CONTRACTOR ", page:50},
+  {level:2, title:"APPENDIX-5 LIST OF SUB-CONTRACTORS ", page:52},
+  {level:2, title:"APPENDIX - 6 SCOPE OF WORKS AND SUPPLY BY THE EMPLOYER ", page:53},
+  {level:2, title:"APPENDIX - 7 LIST OF DOCUMENTS FOR REVIEW AND APPROVAL ", page:54},
+  {level:2, title:"APPENDIX - 8 FUNCTIONAL GUARANTEES ", page:55},
+  {level:0, title:"Second Contract ", page:56},
+  {level:1, title:"Article 2. Contract Price and Terms of Payment ", page:57},
+  {level:0, title:"Third Contract ", page:62},
+  {level:1, title:"Article 2. Contract Price and Terms of Payment ", page:63},
+  {level:0, title:"Notification of Award (NOA) ", page:67},
+  {level:1, title:"Notification of Award (NOA) for Ex-works (India) Supply ", page:67},
+  {level:2, title:"MINUTES OF POST BID DISCUSSIONS ", page:70},
+  {level:1, title:"Notification of Award (NOA) for Inland Transportation, Inland Insurance, Installation, Testing & Commissioning and O&M ", page:71},
+  {level:2, title:"MINUTES OF POST BID DISCUSSIONS ", page:74},
+  {level:1, title:"Notification of Award (NOA) for Civil, Structural & Architectural Works ", page:75},
+  {level:2, title:"MINUTES OF POST BID DISCUSSIONS ", page:78},
+  {level:0, title:"BIDDING DOCUMENTS ", page:79},
+  {level:1, title:"CONTENTS ", page:80},
+  {level:1, title:"Acronyms ", page:81},
+  {level:1, title:"SECTION-I INVITATION FOR BIDS (IFB) ", page:82},
+  {level:2, title:"2.0 Brief Scope of Work ", page:83},
+  {level:2, title:"Annexure-I to IFB QUALIFYING REQUIREMENTS ", page:86},
+  {level:1, title:"SECTION - II INSTRUCTIONS TO BIDDERS ", page:89},
+  {level:2, title:"Table of Clauses - Instructions to Bidders ", page:90},
+  {level:2, title:"A. Introduction ", page:91},
+  {level:2, title:"B. The Bidding Documents ", page:91},
+  {level:2, title:"C. Preparation of Bids ", page:93},
+  {level:3, title:"Language of Bid ", page:93},
+  {level:3, title:"Documents Comprising the Bid ", page:93},
+  {level:4, title:"Techno-Commercial Bid (Envelope-1) ", page:94},
+  {level:5, title:"Attachment 1: Bid Security ", page:94},
+  {level:5, title:"Attachment- 1(A)Tender Fees ", page:94},
+  {level:5, title:"Attachment 2: Power of Attorney", page:94},
+  {level:5, title:"Attachment-3I: Deed of Joint Undertakings [IF APPLICABLE]", page:95},
+  {level:5, title:"Attachment-3L: JV Agreement [IF APPLICABLE]", page:95},
+  {level:5, title:"Attachment-3M: Declaration regarding insolvency, bankruptcy and Liquidation", page:95},
+  {level:5, title:"Documents to be submitted online through e-tender mode:", page:95},
+  {level:6, title:"Attachment 3: Bidder's Qualifications", page:95},
+  {level:6, title:"Attachment 4: Conformity of the Facilities", page:98},
+  {level:6, title:"Attachment 4A: Special Tools and Tackles", page:98},
+  {level:6, title:"Attachment 5: Erection Tools and Plant and Safety Equipments & Safety Personal Protective Equipments", page:98},
+  {level:6, title:"Attachment 5A: Commissioning / Start-up spares", page:98},
+  {level:6, title:"Attachment 6: Quality Assurance Programme", page:98},
+  {level:6, title:"Attachment 7: Additional Information", page:98},
+  {level:6, title:"Attachment 8: Demonstration Parameter / Guarantee Declaration", page:98},
+  {level:6, title:"Attachment 8A: Functional Guarantees", page:99},
+  {level:6, title:"Attachment-9: INTEGRITY PACT:", page:99},
+  {level:6, title:"Attachment 10: Details of Foreign Principals of Indian Bidders", page:99},
+  {level:5, title:"General Technical Evaluation (GTE) Conditions:", page:99},
+  {level:4, title:"Price Envelope", page:100},
+  {level:5, title:"Attachment 1P: Declaration regarding Import Content in Ex-works price", page:100},
+  {level:5, title:"Attachment 2P: Custom Duty Benefits for Import for Construction Equipment", page:100},
+  {level:5, title:"Attachment 3P: Functional Guarantees ", page:100},
+  {level:5, title:"Attachment 4P: Price Adjustment Data ", page:100},
+  {level:5, title:"Check List ", page:100},
+  {level:5, title:"Price Envelope including Price Schedules", page:101},
+  {level:5, title:"Benefits / Concessional Custom Duty- for Power Projects & Plant", page:105},
+  {level:5, title:"Bid Currencies", page:106},
+  {level:5, title:"Bid Security", page:106},
+  {level:5, title:"Period of Validity of Bids", page:109},
+  {level:5, title:"Format and Signing of Bid", page:109},
+  {level:2, title:"D. Submission of Bids ", page:109},
+  {level:2, title:"E. Bid Opening and Evaluation ", page:111},
+  {level:2, title:"F. Award of Contract ", page:117},
+  {level:2, title:"G. Other Instructions ", page:119},
+  {level:1, title:"SECTION-III BID DATA SHEET (BDS) ", page:131},
+  {level:1, title:"SECTION-IV GENERAL CONDITIONS OF CONTRACT (GCC) ", page:151},
+  {level:2, title:"Table of Clauses - General Conditions of Contrac ", page:152},
+  {level:2, title:"A. Contract and Interpretation ", page:154},
+  {level:3, title:"1. Definitions ", page:154},
+  {level:3, title:"2. Contract Documents ", page:158},
+  {level:3, title:"3. Interpretation ", page:158},
+  {level:3, title:"4. Notices ", page:161},
+  {level:3, title:"5. Governing Laws ", page:162},
+  {level:3, title:"6. Settlement of Disputes ", page:162},
+  {level:4, title:"6.1 Mutual Consultation ", page:162},
+  {level:4, title:"6.2 *Resolution of Dispute through Independent Engineer (IE ", page:163},
+  {level:4, title:"6.3 Mediation through Independent External Monitors (IEMs) ", page:167},
+  {level:4, title:"6.4 Resolution of Dispute through Conciliation ", page:168},
+  {level:5, title:"6.4.1. Resolution of Dispute through Expert Settlement Council (ESC) ", page:169},
+  {level:5, title:"6.4.2. Resolution of Dispute through Conciliation Committee of Independent Experts (CCIE) ", page:174},
+  {level:4, title:"6.5. Arbitration ", page:177},
+  {level:2, title:"B. Subject Matter of Contract ", page:181},
+  {level:3, title:"7. Scope Of Facilities ", page:181},
+  {level:3, title:"8. Time for Commencement and Completion ", page:186},
+  {level:3, title:"9. Contractor's Responsibilities ", page:186},
+  {level:3, title:"10. Employer's Responsibilities ", page:187},
+  {level:2, title:"C. Payment ", page:188},
+  {level:3, title:"11. Contract Price ", page:188},
+  {level:3, title:"12. Terms of Payment ", page:189},
+  {level:3, title:"13. Securities ", page:189},
+  {level:3, title:"14. Taxes and Duties ", page:194},
+  {level:2, title:"D. Intellectual Property ", page:196},
+  {level:3, title:"15. Copyright ", page:196},
+  {level:3, title:"16. Confidential Information ", page:196},
+  {level:2, title:"E. Work Execution ", page:197},
+  {level:3, title:"17. Representatives ", page:197},
+  {level:3, title:"18. Work Program ", page:200},
+  {level:3, title:"19. Subcontracting ", page:202},
+  {level:3, title:"20. Design And Engineering ", page:203},
+  {level:3, title:"21. Procurement ", page:206},
+  {level:3, title:"22. Installation ", page:208},
+  {level:3, title:"23. Test And Inspection ", page:214},
+  {level:3, title:"24. Completion of the Facilities ", page:216},
+  {level:3, title:"25. Commissioning, Guarantee Tests and Operational Acceptance ", page:217},
+  {level:2, title:"F. Guarantees and Liabilities ", page:219},
+  {level:3, title:"26. Completion Time Guarantee ", page:219},
+  {level:3, title:"27. Defect Liability ", page:220},
+  {level:3, title:"28. Functional Guarantees ", page:223},
+  {level:3, title:"29. Patent Indemnity ", page:224},
+  {level:3, title:"30. Limitation of Liability ", page:225},
+  {level:2, title:"G. Risk Distribution ", page:225},
+  {level:3, title:"31. Transfer of Ownership ", page:225},
+  {level:3, title:"32. Care of Facilities ", page:227},
+  {level:3, title:"33. Loss of or Damage to Property; Accident or Injury to workers; Indemnification ", page:228},
+  {level:3, title:"34. Insurance ", page:229},
+  {level:3, title:"35. Unforeseen Conditions ", page:232},
+  {level:3, title:"36. Change in Laws and Regulations ", page:233},
+  {level:3, title:"37. Force Majeure ", page:233},
+  {level:3, title:"38. War Risks ", page:234},
+  {level:2, title:"H. Change in Contract Elements ", page:236},
+  {level:3, title:"39. Change In The Facilities ", page:236},
+  {level:3, title:"40. Extension of Time for Completion ", page:238},
+  {level:3, title:"41. Suspension ", page:240},
+  {level:3, title:"42. Termination ", page:242},
+  {level:3, title:"43. Assignment ", page:248},
+  {level:2, title:"I. Other Conditions ", page:248},
+  {level:3, title:"44. Contractor Performance Feedback and Evaluation System ", page:248},
+  {level:3, title:"45. Fraud Prevention Policy ", page:249},
+  {level:3, title:"46. Debarment ", page:249},
+  {level:3, title:"47 Integrity Pact ", page:249},
+  {level:3, title:"48 Independent External monitors ", page:249},
+  {level:3, title:"49 Contractor's Labour Information Management System (CLIMS) ", page:250},
+  {level:3, title:"50 No Claim for interest or damage ", page:250},
+  {level:3, title:"51 Human Resources ", page:251},
+  {level:3, title:"52 Materials obtained from Excavation ", page:254},
+  {level:3, title:"53 Treasure, Trove, Fossils, etc ", page:254},
+  {level:3, title:"54 Protection of Trees ", page:254},
+  {level:3, title:"55 Security Watch and Lighting ", page:255},
+  {level:3, title:"56 Prevention of Pollution ", page:255},
+  {level:3, title:"57 Explosives ", page:255},
+  {level:3, title:"58 Royalty ", page:255},
+  {level:3, title:"59 Procedure for Contract Closing ", page:257},
+  {level:3, title:"60 Anti-Bribery and Anti-Corruption (ABAC) Policy: ", page:257},
+  {level:3, title:"ANNEXURE-A PERFORMANCE REPORT OF CONTRACTOR GUIDELINES FOR FILLING THE FORMAT ", page:258},
+  {level:4, title:"FORMAT FOR ENGG & QA SCORE ", page:259},
+  {level:4, title:"FORMAT FOR FINANCE SCORE ", page:260},
+  {level:4, title:"FORMAT FOR SUPPLY SCORE ", page:261},
+  {level:4, title:"FORMAT FOR CONSTRUCTION/INSTALLATION SCORE ", page:262},
+  {level:4, title:"FORMAT FOR QUALITY SCORE ", page:264},
+  {level:4, title:"FORMAT FOR SAFETY SCORE ", page:265},
+  {level:4, title:"FORMAT FOR CLAIMS & DISPUTE SCORE ", page:266},
+  {level:4, title:"Overall Performance Evaluation ", page:267},
+  {level:3, title:"Annexure-B Safety Rules ", page:268},
+  {level:4, title:"Index ", page:268},
+  {level:4, title:"INTRODUCTION: ", page:270},
+  {level:4, title:"SECTION I SAFETY MANAGEMENT ", page:275},
+  {level:4, title:"SECTION-II 1. Safety at workplace and equipment ", page:293},
+  {level:4, title:"2.0 SAFETY IN MATERIAL HANDLING AND WASTE DISPOSAL ", page:300},
+  {level:4, title:"3.0 WELDING AND GAS CUTTING OPERATIONS ", page:306},
+  {level:4, title:"4.0 SAFETY IN THE USE OF ELECTRICITY ", page:309},
+  {level:4, title:"5.0 SAFETY IN THE USE OF HAND TOOLS AND POWER-OPERATED TOOLS ", page:314},
+  {level:4, title:"6.0 SAFETY IN THE USE OF LADDERS AND STAIRS ", page:317},
+  {level:4, title:"7.0 SAFETY IN THE USE OF LIFTING APPLIANCES & GEARS ", page:320},
+  {level:4, title:"8.0 SAFETY IN THE USE OF TRANSPORT, EARTHMOVING EQUIPMENT & OTHER CONSTRUCTION MACHINERY ", page:333},
+  {level:4, title:"9.0 SAFETY IN THE PROVISION OF RUNWAYS AND RAMP ", page:336},
+  {level:4, title:"10. SAFETY IN HANDLING AND USE OF EXPLOSIVES ", page:337},
+  {level:4, title:"11.0 SAFETY IN EXCAVATION & TUNNELING WORK ", page:345},
+  {level:4, title:"12.0. SAFETY IN PILING WORK ", page:358},
+  {level:4, title:"13.0. SAFETY IN THE ERECTION, USE AND DISMANTLING OF SCAFFOLDS ", page:360},
+  {level:4, title:"14.0. SAFETY IN THE ERECTION OF STRUCTURAL FRAME & FORMWORK ", page:365},
+  {level:4, title:"15.0. SAFETY IN CONCRETE WORK ", page:368},
+  {level:4, title:"16.0. SAFETY IN CONSTRUCTION, REPAIR & MAINTENANCE OF STEEP ROOFS ", page:372},
+  {level:4, title:"17.0. SAFETY IN CATCHES PLATFORMS, HOARDINGS & CHUTES ", page:373},
+  {level:4, title:"18.0. SAFETY IN WORK ON OR ADJACENT TO WATER ", page:374},
+  {level:4, title:"19.0 SAFETY IN COFFERDAMS & CAISSONS ", page:375},
+  {level:4, title:"20. SAFETY IN DEMOLITION WORK ", page:376},
+  {level:4, title:"21. FIRE EXTINGUISHERS & OTHER APPLIANCES OF FIRE FIGHTING ", page:379},
+  {level:4, title:"APPENDIX Annexure I IMPORTANT INDIAN STANDARDS RELATED TO SAFETY ", page:381},
+  {level:4, title:"Annexure-II BASIC STRUCTURE OF SAFETY PLAN ", page:383},
+  {level:4, title:"Annexure - III CONFINED SPACE WORK PERMIT ", page:384},
+  {level:5, title:"HOT WORK PERMIT ", page:386},
+  {level:5, title:"PERMIT FOR LIFTING OF MATERIAL ", page:388},
+  {level:5, title:"WORKING AT HEIGHT PERMIT ", page:390},
+  {level:4, title:"Annexure - IV ", page:392},
+  {level:3, title:"Annexure-C to General Conditions of Contract ", page:394},
+  {level:3, title:"Annexure-D to General Conditions of Contract ", page:395},
+  {level:1, title:"SECTION - V SPECIAL CONDTIONS OF CONTRACT (SCC) ", page:397},
+  {level:2, title:"1. Definitions (GCC Clause 1) ", page:397},
+  {level:2, title:"Annexure - I List of Banks ACCEPTABLE FOR SUBMISSION ", page:400},
+  {level:2, title:"Annexure-II Format of the Bank Guarantee (BG) issued by State Bank of India ", page:402},
+  {level:2, title:"Annexure-III to SCC CONTRACT CLOSING CERTIFICATES ", page:404},
+  {level:2, title:"ANNEXURE-IV to SCC Restrictions under Rule 144(xi) of the General Financial Rules (GFRS), 2017 ", page:406},
+  {level:3, title:"Schedule I List of Category-I Sensitive sectors: ", page:412},
+  {level:3, title:"Schedule II List of Category-Il Sensitive sectors: ", page:413},
+  {level:3, title:"Schedule-III List of Sensitive Technologies: ", page:414},
+  {level:3, title:"ANNEXURE I Competent Authority and Procedure for Registration ", page:415},
+  {level:3, title:"ANNEXURE II Special Cases ", page:417},
+  {level:3, title:"ANNEXURE III Model Clause/Certificate/ Undertaking to be inserted in tenders etc ", page:418},
+  {level:2, title:"Annexure-VI Constitution of Conciliation Committee of Independent Experts for resolution ", page:421},
+  {level:1, title:"SECTION - VII PART 1 OF 2 ", page:423},
+  {level:2, title:"1a. BID FORM ", page:426},
+  {level:2, title:"ATTACHMENTS FOR ENVELOPE-1 (TECHNO-COMMERCIAL) ", page:430},
+  {level:3, title:"ATTACHMENT - 1 BID SECURITY ", page:431},
+  {level:3, title:"ATTACHMENT - 1(A) (Tender Fee) ", page:432},
+  {level:3, title:"ATTACHMENT - 2 POWER OF ATTORNEY ", page:433},
+  {level:3, title:"ATTACHMENT - 3 (Qualification Data) ", page:434},
+  {level:3, title:"ATTACHMENT - 4 (Conformity of Facilities) ", page:473},
+  {level:3, title:"ATTACHMENT-5 (Schedule of Erection Tools & Plant and Safety Equipment's & Safety Personal Protective Equipment's) ", page:475},
+  {level:3, title:"ATTACHMENT - 6 (Information regarding Quality Assurance Program) ", page:478},
+  {level:3, title:"ATTACHMENT - 7 [Additional Information] ", page:479},
+  {level:3, title:"ATTACHMENT - 8 [Demonstration Parameter/ Guarantee Declaration] ", page:480},
+  {level:3, title:"ATTACHMENT - 8A [Functional Guarantee] ", page:481},
+  {level:3, title:"ATTACHMENT-10 (Details of Foreign Principals of Indian Bidders) ", page:482},
+  {level:3, title:"ATTACHMENT-12 (Technical Data Sheet) Not Applicable ", page:483},
+  {level:3, title:"ATTACHMENT-11 Not Applicable ", page:485},
+  {level:3, title:"Attachement-9 INTEGRITY PACT ", page:486},
+  {level:2, title:"ATTACHMENTS FOR ENVELOPE-2 (PRICE) ", page:491},
+  {level:3, title:"Attachment-1P (Declaration regarding Import Content in Ex-works price of Schedule-2) ", page:492},
+  {level:3, title:"ATTACHMENT - 3P [FUNCTIONAL GUARANTEES] ", page:495},
+  {level:3, title:"ATTACHMENT-4P (Price Adjustment Data) ", page:496},
+  {level:3, title:"CHECKLIST FOR PRICE BID ", page:501},
+  {level:1, title:"SECTION - VII Part 2 OF 2 ", page:502},
+  {level:2, title:"TABLE OF FORMS AND PROCEDURES ", page:503},
+  {level:2, title:"2. BID SECURITY FORM ", page:505},
+  {level:2, title:"3. (a) FORM OF NOTIFICATION BY THE EMPLOYER TO BIDDER (b) FORM OF SIGHT DRAFT ", page:513},
+  {level:2, title:"4. FORM OF NOTIFICATION OF AWARD ", page:516},
+  {level:2, title:"5. FORM OF CONTRACT AGREEMENT ", page:526},
+  {level:2, title:"6. PERFORMANCE SECURITY FORM ", page:591},
+  {level:2, title:"7. BANK GUARANTEE FORM FOR ADVANCE PAYMENT (SUPPLY EX-WORKS) ", page:598},
+  {level:2, title:"8. FORM OF COMPLETION CERTIFICATE ", page:607},
+  {level:2, title:"9. FORM OF OPERATIONAL ACCEPTANCE CERTIFICATE ", page:609},
+  {level:2, title:"10. FORM OF TRUST RECEIPT ", page:611},
+  {level:2, title:"11. FORM OF INDEMNITY-CUM-UNDERTAKING AGREEMENT ", page:613},
+  {level:2, title:"12. FORM OF AUTHORISATION LETTER ", page:622},
+  {level:2, title:"13. DEED OF JOINT UNDERTAKING ", page:625},
+  {level:2, title:"14. FORM OF BANK GUARANTEE/INSURANCE SURETY BOND BY ALL EXECUTANTS OF DEED OF JOINT UNDERTAKING OTHER THEN CONTRACTOR ", page:627},
+  {level:2, title:"15. FORM OF JOINT VENTURE AGREEMENT ", page:632},
+  {level:2, title:"16. FORM OF BANK GUARANTEE/INSURANCE SURETY BOND VERIFICATION CHECK LIST ", page:634},
+  {level:2, title:"17. FORM OF VALIDITY EXTENSION OF BANK GUARANTEE/INSURANCE SURETY BOND ", page:637},
+  {level:2, title:"18. FORM OF INDEMNITY-CUM-UNDERTAKING AGREEMENT [FOR REMOVAL / DISPOSAL OF SCRAP/SURPLUS MATERIAL] ", page:640},
+  {level:2, title:"19. FORM OF CONTRACT CLOSING CERTIFICATES ", page:643},
+  {level:2, title:"20. FORM OF DECLARATION OF ABSENCE OF CONFLICT OF INTEREST WITH CONCILIATION COMMITTEES OF INDEPENDENT EXPERTS (CCIE) ", page:658},
+  {level:2, title:"FORM NO. 21 PAGE 1 OF 1 DECLARATION OF ABSENCE OF CONFLICT OF INTEREST WITH INDEPENDENT ENGINEER (IE) ", page:659},
+  {level:2, title:"Form 22. (ELECTRONIC FUND TRANSFER FORM) ", page:660},
+  {level:2, title:"FORM NO. 23 BG forwarding letter from Bank to Unified Treasury in Bank's letterhead ", page:661},
+  {level:2, title:"FORM NO. 24 (To be executed amongst Employer, Contractor and Sub-contractor) Tripartite Integrity Pact ", page:662},
+  {level:2, title:"FORM NO. 25 TO WHOMSOEVER IT MAY CONCERN ", page:667},
+  {level:2, title:"Annexure-3 to Appendix-1 ESCROW AGREEMENT ", page:668},
+  {level:1, title:"SECTION - VI Technical Specifications ", page:690},
+  {level:2, title:"INDEX ", page:691},
+  {level:2, title:"A. Project Information ", page:692},
+  {level:3, title:"A.1. General: ", page:692},
+  {level:3, title:"A.2. Project Outline: ", page:692},
+  {level:3, title:"A.3. Scope of Work: ", page:692},
+  {level:3, title:"A.4. General Guidelines: ", page:695},
+  {level:3, title:"A.5. Facilities provided by NTPC: ", page:695},
+  {level:2, title:"B. Performance Guarantee & Functional Test ", page:697},
+  {level:3, title:"B.1. Performance Guarantee Test ", page:697},
+  {level:3, title:"B.2. Functional Test ", page:698},
+  {level:2, title:"C. Drawings & Terminal Points: ", page:700},
+  {level:3, title:"C.1. Plot Plan: ", page:700},
+  {level:3, title:"C.2. Process Flow Diagram (PFD): ", page:702},
+  {level:3, title:"C.3. Electrical - Single Line Drawing (SLD): ", page:703},
+  {level:3, title:"C.4. Terminal Points: ", page:703},
+  {level:2, title:"D. CO2 Capture, Compression and Storage Block ", page:705},
+  {level:3, title:"D.1 Plant Capacity & Design Considerations: ", page:705},
+  {level:3, title:"D.2. Process Description ", page:706},
+  {level:3, title:"D.3. Mechanical Requirements ", page:707},
+  {level:2, title:"E. Carbonated Brick (C-Brick) Manufacturing Block ", page:715},
+  {level:3, title:"E.1 Plant Capacity & Design Considerations: ", page:715},
+  {level:3, title:"E.2. Process Description ", page:715},
+  {level:3, title:"E.3. Mechanical Requirements ", page:719},
+  {level:4, title:"PART A Supply of Raw Material Storage, Automated Batch Weighing & Feeding System ", page:719},
+  {level:4, title:"PART B Mixing, Brick Press & Pre-Curing System ", page:721},
+  {level:4, title:"Part C Autoclave Unit ", page:724},
+  {level:4, title:"Part D: MATERIAL HANDLING EQUIPMENT ", page:726},
+  {level:4, title:"PART E:- Utilities ", page:726},
+  {level:4, title:"PART F: - Lab ", page:726},
+  {level:2, title:"F. Electrical Requirements: ", page:728},
+  {level:3, title:"1 Design Philosophy ", page:728},
+  {level:3, title:"2 Electrical Standards ", page:729},
+  {level:3, title:"3 Electrical LoadList (Indicative): CO2 Capture, Compression and StorageBlock ", page:729},
+  {level:3, title:"4 Electrical LoadList (Indicative): CBrick Manufacturing Block ", page:730},
+  {level:3, title:"5 Brief of Electrical Scope ", page:731},
+  {level:3, title:"6 Basic Design & Detailed Engineering ", page:734},
+  {level:3, title:"7 Instrument Transformer ", page:736},
+  {level:3, title:"8 Surge Arrestor ", page:736},
+  {level:3, title:"9 Motor ", page:737},
+  {level:3, title:"10 VFD ", page:739},
+  {level:3, title:"11 Cable vault & Tranches ", page:742},
+  {level:3, title:"12 HT Power Cables ", page:743},
+  {level:3, title:"13 LT Power Cables ", page:744},
+  {level:3, title:"14 Cable Selection & Sizing ", page:746},
+  {level:3, title:"15 Earthing & Lightning Protection ", page:746},
+  {level:3, title:"16 MV Switchgear ", page:748},
+  {level:3, title:"17 LT Switchgear ", page:751},
+  {level:3, title:"18Control Switch & Station ", page:753},
+  {level:3, title:"19 Numerical Relays ", page:753},
+  {level:3, title:"20 Alarm Annunciations ", page:756},
+  {level:3, title:"21 Other Protection & Control System ", page:756},
+  {level:3, title:"22 Auxiliary Transformer (Oil Type) ", page:757},
+  {level:3, title:"23 Illumination & Lighting System ", page:763},
+  {level:3, title:"24 DC System ", page:766},
+  {level:3, title:"25 Fire Detection & Alarm System ", page:770},
+  {level:3, title:"27 Fire Protection System ", page:770},
+  {level:3, title:"28 Hazardous Area ", page:770},
+  {level:3, title:"29 Type, Routine & Acceptance Test ", page:771},
+  {level:3, title:"30 Field Testing & Commissioning ", page:771},
+  {level:3, title:"31 Guarantee ", page:771},
+  {level:2, title:"G. Control & Instrumentation Requirements: ", page:772},
+  {level:3, title:"CONTROL & INSTRUMENTATION SPECIFICATIONS- General ", page:772},
+  {level:3, title:"Programmable Logic Controller (PLC) ", page:775},
+  {level:3, title:"Programming Station ", page:780},
+  {level:3, title:"Human Machine Interface (HMI)", page:781},
+  {level:3, title:"Electronic Smart Transmitters and Measuring Instruments ", page:782},
+  {level:3, title:"Impulse Piping, Tubing, Fittings, Valves, Manifolds ", page:787},
+  {level:3, title:"Instrument & Control Cable ", page:789},
+  {level:3, title:"CCTV System ", page:790},
+  {level:3, title:"Control Room ", page:791},
+  {level:2, title:"H. Civil Requirements: ", page:792},
+  {level:3, title:"1 Design and Standards ", page:792},
+  {level:3, title:"2 Scope of Work ", page:793},
+  {level:3, title:"3 Civil Materials ", page:796},
+  {level:3, title:"4 Civil Works ", page:797},
+  {level:3, title:"5 Geotechnical investigation (Enlisted Agencies) ", page:798},
+  {level:2, title:"I. Comprehensive Operation & Maintenance: ", page:799},
+  {level:2, title:"J. List of reputed manufacturers ", page:802},
+  {level:1, title:"Corrigendum (Clarification and Amendment) to Bidding Documents ", page:805},
+  {level:2, title:"Clarification No. 01 to Commercial Bidding Documents (Section I to V and VII) ", page:805},
+  {level:2, title:"Amendment No 01 to Commercial Bidding Documents ", page:806},
+  {level:2, title:"Amendment No 01 to Technical Specification (Section-VI) ", page:821},
+  {level:2, title:"CLARIFICATIONS No 01 to TECHNICAL SPECIFICATIONS (TS) (Section VI) ", page:825},
+  {level:2, title:"Date Corrigendum_01 ", page:837},
+  {level:2, title:"Date Corrigendum_02 ", page:828},
+  {level:2, title:"Clarification No 02 to Technical Specification (Section VI) ", page:839},
+  {level:2, title:"GEOTECHNICAL INVESTIGATION REPORT ", page:843},
+  {level:3, title:"REPORT ONGEOTECHNICAL INVESTIGATION WORK FORFGD AREA AT NTPC RAMAGUNDAM TPSSTAGE-I & II (3X200MW + 3X500MW) ", page:844},
+  {level:3, title:"LIST OF CONTENTS ", page:845},
+  {level:3, title:"1. INTRODUCTION ", page:846},
+  {level:3, title:"2. FIELD INVESTIGATION ", page:848},
+  {level:3, title:"3. LABORATORY TESTING ", page:855},
+  {level:3, title:"4. SUBSOIL CONDITION, STRATIFICATION AND PROPERTIES ", page:856},
+  {level:3, title:"5. DISCUSSION ", page:888},
+  {level:3, title:"6. SUMMARY & RECOMMENDATIONS ", page:924},
+  {level:3, title:"7. GEOLOGICAL LOGGING ", page:926},
+  {level:3, title:"8.ELECTRICAL RESISTIVITY TEST ", page:973},
+  {level:3, title:"9. CROSS HOLE TEST RESULTS ", page:984},
+  {level:1, title:"Techno-Commercial Bid Proposal ", page:1192},
+  {level:2, title:"LOI NCL ", page:1192},
+  {level:2, title:"LOI TSPGCL ", page:1197},
+  {level:2, title:"LOI GPIPL ", page:1207},
+  {level:2, title:"Veolia Carbon Clean India Pvt Ltd (VCCIPL), the Technology Provider ", page:1218},
+  {level:2, title:"Financial Statement FY 24-25 ", page:1220},
+  {level:2, title:"Financial Statement FY 23-24 ", page:1230},
+  {level:2, title:"Financial Statement FY 22-23 ", page:1256},
+  {level:2, title:"Turnover Certificate ", page:1282},
+  {level:2, title:"Technology License agreement/ Agreement for Right to Use of Technology ", page:1286},
+  {level:2, title:"Financial Statements of Carboncapture Technologies ", page:1299},
+  {level:2, title:"POWER OF ATTORNEY ", page:1305},
+  {level:2, title:"BOARD RESOLUTION ", page:1307},
+  {level:2, title:"Attachment 3A QR Documents & BID forms ", page:1308},
+  {level:3, title:"BID FORM (ENVELOPE-1 (TECHNO-COMMERCIAL) & ENVELOPE-2 (PRICE)) ", page:1309},
+  {level:3, title:"ATTACHMENTS FOR ENVELOPE-1 (TECHNO-COMMERCIAL) ", page:1312},
+  {level:3, title:"ATTACHMENT -1 BID SECURITY ", page:1313},
+  {level:3, title:"ATTACHMENT - 1(A) TENDER FEE ", page:1314},
+  {level:3, title:"ATTACHMENT - 2 POWER OF ATTORNEY ", page:1316},
+  {level:3, title:"ATTACHMENT - 3 (Qualification Data) ", page:1317},
+  {level:3, title:"ATTACHMENT - 3A-1 (Details pertaining to Technical Qualification as per clause 1.1.0 of the Qualifying Requirements, under item No. 4.0 of the Bid Data She ", page:1318},
+  {level:3, title:"APPENDIX-I TO ATTACHMENT-3A-1 Undertaking from Independent Statutory Auditor ", page:1326},
+  {level:3, title:"ATTACHMENT - 3A-2 (Details pertaining to Financial Criteria of Qualification Requirement as per Item No. 4.0 of Bid Data Sheet) ", page:1333},
+  {level:3, title:"APPENDIX-C TO ATTACHMENT - 3A2 PROFORMA OF CERTIFICATE FROM THE CEO/C€8 OF THE COMPANY IN ACCORDANCE WITH ITEM NO. 2.4 OF BDS ", page:1346},
+  {level:3, title:"REFER ANNEXURE-3B1 Working Capital Certificate ", page:1350},
+  {level:3, title:"ATTACHMENT-3C (Details of Design, Engineering, Manufacturing and Testing Capabilities of Bidder and/or wherever applicable, his JV Partner(s)) ", page:1354},
+  {level:3, title:"ATTACHMENT -3D (Details of Manufacturing Capacities/Plant Loading of the Bidder) ", page:1355},
+  {level:3, title:"ATTACHMENT -3E (Present Order Book Position) ", page:1355},
+  {level:3, title:"ATTACHMENT - 3F Past Performance data ", page:1358},
+  {level:3, title:"ATTACHMENT - 3G (Data regarding key construction personnel) ", page:1359},
+  {level:3, title:"ATTACHMENT - 3H (Man poweer loading Data) ", page:1360},
+  {level:3, title:"ATTACHMENT -31 DEED OF JOINT UNDERTAKING Not applicable ", page:1361},
+  {level:3, title:"ATTACHMENT - 3J Project Management Organizations ", page:1362},
+  {level:3, title:"ATTACHMENT - 3K Not Applicable ", page:1364},
+  {level:3, title:"ATTACHMENT - 3L JV AGREEMENT Not applicable ", page:1365},
+  {level:3, title:"ATTACHMENT - 3M (i) Self Declaration ", page:1366},
+  {level:3, title:"ATTACHMENT-3M (ii) Self-declaration by the Parent/Holding/Subsidiary Company, Associate or Collaborator/ Technology Provider ", page:1367},
+  {level:3, title:"ATTACHMENT-3N Technology License agreement/ Agreement for Right to Use of Technology ", page:1370},
+  {level:3, title:"ATTACHMENT - 4 (Conformity of Facilities) ", page:1373},
+  {level:4, title:"HAMTEK RANGE OF EPC PROJECTS ", page:1375},
+  {level:4, title:"COMPANY PROFILE ", page:1376},
+  {level:4, title:"MANAGING DIRECTOR PROFILE ", page:1380},
+  {level:4, title:"EPC PROJECT REFERENCES ", page:1381},
+  {level:4, title:"MANUFACTURING FACILITIES ", page:1386},
+  {level:4, title:"INSTALLATIONS GALLERY ", page:1394},
+  {level:3, title:"ATTACHMENT - 4A (List of Special Maintenance Tools & Tackles) ", page:1400},
+  {level:3, title:"ATTACHMENT - 5 Schedule of tools and plants & Safety equipment) ", page:1401},
+  {level:3, title:"ATTACHMENT - 6 (Information regarding Quality Assurance Program) ", page:1404},
+  {level:3, title:"ATTACHMENT - 7 [Additional Information] NIL ", page:1408},
+  {level:3, title:"ATTACHMENT - 8 [Demonstration Parameter/ Guarantee Declaration] ", page:1409},
+  {level:3, title:"ATTACHMENT - 8A [Functional Guarantee] ", page:1410},
+  {level:3, title:"ATTACHMENT-12 (Technical Data Sheet) Not applicable ", page:1412},
+  {level:3, title:"Checklist for techno-commercial Bid ", page:1413},
+  {level:3, title:"ATTACHMENT-11 Not Applicable ", page:1414},
+  {level:3, title:"Attachement-9 INTEGRITY PACT ", page:1415},
+  {level:2, title:"Bid Submission Confirmation ", page:1420},
+  {level:2, title:"HAMTEK TECHNOLOGIES INDIA PRIVATE TIMITED PROVISIONAT BATANCE SHEET 2024.25 ", page:1428},
+  {level:2, title:"HAMTEK QAP.pdf; HAMTEK Financial Details.pdf; Hamtek HSE Manual.pdf; HAMTEK PRESENTATION.pdf; ", page:1443},
+  {level:3, title:"Financial ", page:1445},
+  {level:3, title:"HAMTEK RANGE OF EPC PROJECTS ", page:1447},
+  {level:3, title:"Quality Assurance Programme for Carbonated Fly Ash Brick ", page:1502},
+  {level:3, title:"INDICATIVE FIELD QUALITY PLAN ", page:1509},
+  {level:3, title:"MANUFACTURING QUALITY PLAN ", page:1521},
+  {level:3, title:"HEALTH, SAFETY and ENVIRONMENT PLAN for SITE OPERATIONS ", page:1525},
+  {level:3, title:"OPERATIONAL CONTROL PROCEDURES ", page:1527},
+  {level:3, title:"HEALTH, SAFETY AND ENVIRONMENT PLAN FOR SITE OPERATION by SUBCONTRACTORS ", page:1528},
+  {level:2, title:"APPENDIX-I TO ATTACHMENT-3A-1 Undertaking from Independent Statutory Auditor ", page:1605},
+  {level:1, title:"Price Bid Proposal- Item Rate BoQ ", page:1622},
+  {level:2, title:"Attachment-1P (Declaration regarding Import Content in Ex-works price of Schedule-2) ", page:1625},
+  {level:2, title:"ATTACHMENT-2P (Declaration regarding Customs Duty Benefits for Import of Construction Equipment) ", page:1626},
+  {level:2, title:"ATTACHMENT - 3P [FUNCTIONAL GUARANTEES] ", page:1628},
+  {level:2, title:"ATTACHMENT-4P (Price Adjustment Data) ", page:1629},
+  {level:2, title:"CHECKLIST FOR PRICE BID ", page:1634},
+  {level:2, title:"Execution Plan for Carbonated Fly Ash Brick (C-Brick) Plant ", page:1636},
+  {level:2, title:"Performance Bank Guarantees in accordance with ITB Clause 31.1 and the provisions of the Bid Data Sheet (BDS) ", page:1648},
+];
+
+// Build tree recursively
+function buildTree(parentUl, startIdx) {
+  let i = startIdx;
+  while (i < items.length) {
+    const item = items[i];
+    if (item.level < parentUl.dataset.level) break; // back to parent level → stop
+
+    const li = document.createElement('li');
+    const hasChildren = (i + 1 < items.length && items[i+1].level > item.level);
+
+    // Toggle / spacer
+    const toggleSpan = document.createElement('span');
+    toggleSpan.className = hasChildren ? 'toggle' : 'no-children';
+    toggleSpan.textContent = hasChildren ? '+' : ' ';
+    li.appendChild(toggleSpan);
+
+    // Link to PDF
+    const a = document.createElement('a');
+    a.href = `./${item.page}_AAV_COA CBrick Ramagundam Searchable BM.pdf`;
+    a.target = "_blank";
+    a.textContent = item.title;
+    li.appendChild(a);
+
+    // Page number
+    const pageSpan = document.createElement('span');
+    pageSpan.className = 'page';
+    pageSpan.textContent = `(p. ${item.page})`;
+    li.appendChild(pageSpan);
+
+    // Sub-list if needed
+    if (hasChildren) {
+      const ul = document.createElement('ul');
+      ul.dataset.level = item.level + 1;
+      li.appendChild(ul);
+      li.classList.add('has-children'); // optional styling hook
+      i = buildTree(ul, i + 1); // recursive call → returns new index
+    } else {
+      i++;
+    }
+
+    parentUl.appendChild(li);
+
+    // Click handler for toggle (only if has children)
+    if (hasChildren) {
+      toggleSpan.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const li = e.target.parentElement;
+        const isExpanded = li.classList.toggle('expanded');
+        e.target.textContent = isExpanded ? '–' : '+';
+      });
+    }
+  }
+  return i; // return where we stopped
+}
+
+// Start building from root
+const rootUl = document.getElementById('treeRoot');
+rootUl.dataset.level = 0;
+buildTree(rootUl, 0);
+</script>
+
+</body>
+</html>
